@@ -1,0 +1,28 @@
+import csv
+import requests
+
+# Obtener la lista de reproducción de la URL proporcionada
+response = requests.get("https://raw.githubusercontent.com/mkudev/IPTV/master/playlists/playlist_argentina.m3u8")
+raw_data = response.text
+
+# Crear una lista de canales de la lista de reproducción
+channels = []
+for line in raw_data.splitlines():
+    if line.startswith("#EXTINF"):
+        channel = {"title": None, "poster_url": None, "hls_url": None, "shortcode": None}
+        channel["title"] = line.split(",")[1]
+        if "tvg-logo" in line:
+            channel["poster_url"] = line.split('tvg-logo="')[1].split('"')[0]
+    elif line.startswith("http"):
+        channel["hls_url"] = line
+        channel["shortcode"] = f'[bzplayer hls="{channel["hls_url"]}" poster="{channel["poster_url"]}" width="800" height="540" muted="false" selector="true"]'
+        channels.append(channel)
+
+# Guardar los detalles de los canales en un archivo CSV
+with open("channels.csv", "w", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(["Título", "URL de transmisión", "URL del póster", "Shortcode"])
+    for channel in channels:
+        writer.writerow([channel["title"], channel["hls_url"], channel["poster_url"], channel["shortcode"]])
+
+print("Archivo 'channels.csv' generado correctamente.")
