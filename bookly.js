@@ -12360,27 +12360,4 @@ var bookly = (function ($) {
 }(jQuery));
 
 
-// Arreglo con los identificadores de los staff members en el orden en que deben ser asignados
-var staffIds = [1, 2, 3, 4, 5, 6, 7, 8];
 
-// Función para obtener el índice del staff member a asignar según el número de reserva
-function getStaffIndexFromReservationNumber(reservationNumber) {
-  return (reservationNumber - 1) % staffIds.length;
-}
-
-// Función para deshabilitar el dropdown del staff y asignar automáticamente el staff member
-function autoAssignStaffMember() {
-  var staffSelect = jQuery('#bookly-staff select');
-  var selectedValue = staffSelect.val();
-  if (!selectedValue) {
-    var reservationNumber = parseInt(jQuery('#bookly-reservation-number').text());
-    var staffIndex = getStaffIndexFromReservationNumber(reservationNumber);
-    staffSelect.val(staffIds[staffIndex]).trigger('change');
-    staffSelect.prop('disabled', true);
-  }
-}
-
-// Llamar a la función autoAssignStaffMember en el momento adecuado (por ejemplo, al cargar la página)
-jQuery(document).ready(function() {
-  autoAssignStaffMember();
-});
